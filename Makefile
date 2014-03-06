@@ -1,8 +1,23 @@
+DIR:=.
+GRADLEW:=$(DIR)/gradlew
+GOPT:=
+#GOPT:=--info
+#GOPT:=--debug
+
+build:
+	$(GRADLEW) $(GOPT) modZip
+
+run:
+	$(GRADLEW) $(GOPT) runMod
+
 test:
-	./gradlew $@
+	$(GRADLEW) $(GOPT) $@
 
 install:
-	./gradlew $@
+	$(GRADLEW) $(GOPT) $@
+
+release:
+	$(GRADLEW) $(GOPT) uploadArchives
 
 clean:
-	./gradlew $@
+	$(GRADLEW) $(GOPT) $@
