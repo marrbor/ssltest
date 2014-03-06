@@ -1,0 +1,13 @@
+{
+  "description": "Please describe outline of this module.",
+  "homepage": "http://www.iperfecta.net",
+  "author": "Genetec corp<tech-iperfecta@genetec.co.jp>",
+  "licenses": "Proprietary",
+  "keywords": ["iPerfecta","NMS"],
+  "includes": "sample~samplemod~0.1",
+  "deploys": "sample~samplemod~0.1",
+  "preserve-cwd": false,
+  "auto-redeploy": true,
+  "main": "Startup.groovy",
+  "worker": false,
+}
