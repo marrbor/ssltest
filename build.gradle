@@ -41,13 +41,9 @@ building it  first!
 
 pullInDeps - pulls in all dependencies of the module into a nested module directory
 
-uploadArchives - upload the module zip file (and jar if one has been created) to Nexus. You will need to
-                 configure sonatypeUsername and sonatypePassword in ~/.gradle/gradle.properties.
+uploadArchives - upload the module zip file (and jar if one has been created) to inhouse Nexus.
 
 install - install any jars produced to the local Maven repository (.m2)
-
-release - upload the module zip file (and jar if one has been created) to inhouse maven repository.
-          You will need to configure iperfectaUsername and iperfectaPassword in ~/.gradle/gradle.properties.
 
  */
 
