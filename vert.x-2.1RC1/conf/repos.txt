@@ -1,0 +1,14 @@
+# Local Maven repo on filesystem
+mavenLocal:~/.m2/repository
+
+# Inhouse Maven repo.
+maven:http://zandvoort.nws.local:8081/nexus/content/repositories/Ruisdael
+
+# Maven central
+maven:http://repo2.maven.org/maven2
+
+# Sonatype snapshots
+maven:http://oss.sonatype.org/content/repositories/snapshots
+
+# Bintray
+bintray:http://dl.bintray.com
