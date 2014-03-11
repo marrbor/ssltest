@@ -4,6 +4,8 @@ GOPT:=
 #GOPT:=--info
 #GOPT:=--debug
 
+.PHONY: build run test install release clean
+
 build:
 	$(GRADLEW) $(GOPT) modZip
 
