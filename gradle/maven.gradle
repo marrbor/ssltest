@@ -44,11 +44,11 @@ uploadArchives {
 
 			configuration = configurations.archives
 
-			repository(url: "http://zandvoort.nws.local:8081/nexus/content/repositories/Ruisdael/") {
+			repository(url: "http://contents.nws.local:8081/nexus/content/repositories/Ruisdael/") {
 				authentication(userName: sonatypeUsername, password: sonatypePassword)
 			}
 
-			snapshotRepository(url: "http://zandvoort.nws.local:8081/nexus/content/repositories/Ruisdael-snapshot/") {
+			snapshotRepository(url: "http://contents.nws.local:8081/nexus/content/repositories/Ruisdael-snapshot/") {
 				authentication(userName: sonatypeUsername, password: sonatypePassword)
 			}
 

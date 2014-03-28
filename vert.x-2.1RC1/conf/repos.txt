@@ -2,7 +2,7 @@
 mavenLocal:~/.m2/repository
 
 # Inhouse Maven repo.
-maven:http://zandvoort.nws.local:8081/nexus/content/repositories/Ruisdael
+maven:http://contents.nws.local:8081/nexus/content/repositories/Ruisdael
 
 # Maven central
 maven:http://repo2.maven.org/maven2
