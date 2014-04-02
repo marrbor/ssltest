@@ -9,5 +9,5 @@
   "preserve-cwd": false,
   "auto-redeploy": true,
   "main": "Startup.groovy",
-  "worker": false,
+  "worker": false
 }
