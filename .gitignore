@@ -21,3 +21,4 @@ test-results
 test-tmp
 *.class
 mods
+vert.x-*/sys-mods
