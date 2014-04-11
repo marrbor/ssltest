@@ -59,6 +59,8 @@ build: $(MODFILES)
 run: $(MODFILES) $(LOGDIR)
 	cd $(BLDDIR) && $(VERTX) runmod $(MODULE) $(VOPT)
 
+reload: clean run
+
 # compile java source
 $(CLSDIR)/%.class: $(JSRCDIR)/%.java
 	$(GRADLEW) $(GOPT) copyMod
