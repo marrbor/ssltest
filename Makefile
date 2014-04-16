@@ -52,6 +52,8 @@ GOPT:=
 #GOPT:=--info
 #GOPT:=--debug
 
+LOCALREPO:=~/.m2/repository/iperfecta/$(MODNAME)
+
 .PHONY: build run test install release clean
 
 build: $(MODFILES)
@@ -82,6 +84,9 @@ test:
 install:
 	$(GRADLEW) $(GOPT) $@
 
+uninstall:
+	rm -rf $(LOCALREPO)
+
 release:
 	$(GRADLEW) $(GOPT) uploadArchives
 
@@ -96,4 +101,6 @@ check:
 	@echo "vertx option:$(VOPT)"
 	@echo "module:$(MODULE)"
 	@echo "srcs:$(SRCS)"
+	@echo "class:$(CLSS)"
+	@echo "localrepo:$(LOCALREPO)"
 	@echo "modfiles:$(MODFILES)"
