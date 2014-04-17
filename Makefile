@@ -52,6 +52,8 @@ GOPT:=
 #GOPT:=--info
 #GOPT:=--debug
 
+# other workspace to release.
+OTHERDIR:=~/Ruisdael/modules/component-onepackage
 LOCALREPO:=~/.m2/repository/iperfecta/$(MODNAME)
 
 .PHONY: build run test install release clean
@@ -89,6 +91,12 @@ uninstall:
 
 release:
 	$(GRADLEW) $(GOPT) uploadArchives
+
+# release to other workspace.
+OMODDIR:=$(OTHERDIR)/build/mods/$(MODULE)
+other: $(MODFILES)
+	cp -rf $(RSRCDIR)/* $(OMODDIR)
+	cp -rf $(BLDDIR)/classes/main/* $(OMODDIR)
 
 clean:
 	$(GRADLEW) $(GOPT) $@
