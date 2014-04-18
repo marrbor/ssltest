@@ -10,6 +10,7 @@ getval=$(shell cat $(1) |grep -e '^$(2)' |awk -F"=" '{print $$2}')
 
 # tools
 FIND:=/usr/bin/find
+JSONLINT:=~/Ruisdael/tools/bin/JsonLint.groovy
 
 # location
 DIR:=$(abspath .)
@@ -100,6 +101,9 @@ other: $(MODFILES)
 
 clean:
 	$(GRADLEW) $(GOPT) $@
+
+checkconf:
+	$(JSONLINT) conf.json
 
 check:
 	@echo "owner:$(MODOWNER)"
