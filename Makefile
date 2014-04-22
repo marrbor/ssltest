@@ -66,6 +66,8 @@ run: $(MODFILES) $(LOGDIR)
 
 reload: clean run
 
+retest: clean test
+
 # compile java source
 $(CLSDIR)/%.class: $(JSRCDIR)/%.java
 	$(GRADLEW) $(GOPT) copyMod
