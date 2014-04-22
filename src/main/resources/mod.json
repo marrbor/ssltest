@@ -4,7 +4,7 @@
   "author": "Genetec corp<tech-iperfecta@genetec.co.jp>",
   "licenses": "Proprietary",
   "keywords": ["iPerfecta","NMS"],
-  "includes": "iperfectae~lib-basis~0.0.1",
+  "includes": "iperfecta~lib-basis~0.0.1",
   //"deploys": "sample~samplemod~0.1",
   "preserve-cwd": false,
   "auto-redeploy": true,
