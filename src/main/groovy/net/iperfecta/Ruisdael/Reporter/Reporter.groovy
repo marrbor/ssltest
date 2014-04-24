@@ -19,8 +19,7 @@ abstract class Reporter extends BusMod {
 
   // Get mac address for temporary ID.
   def getMacAddress() {
-    def mac = []
-    def hostNic
+    def hostNic = null
     try {
       def hostAddress = InetAddress.getLocalHost()
       hostNic = NetworkInterface.getByInetAddress(hostAddress)
@@ -29,9 +28,8 @@ abstract class Reporter extends BusMod {
         if (nic.isUp() && !nic.isLoopback()) { hostNic = nic }
       }
     }
-    hostNic.getHardwareAddress().each { mac << String.format("%02X", it) }
-    String ret = mac.join(':')
-    logger.debug "getMacAddress: HOST:${hostAddress.getCanonicalHostName()} IP:${hostAddress.getHostAddress()} IfName:${hostNic.getName()} Mac:${ret}"
+    String ret = hostNic?.getHardwareAddress()?.collect { String.format("%02X", it) }?.join(':') ?:'00:11:22:33:44:55'
+    println "HOSTNIC:${hostNic?.getName()} MAC:${ret}"
     ret
   }
 
