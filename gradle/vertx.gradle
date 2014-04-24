@@ -54,6 +54,7 @@ repositories {
     mavenLocal()
   }
   maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+  maven { url 'http://contents.nws.local:8081/nexus/content/repositories/Ruisdael' }
   mavenCentral()
 }
 
@@ -75,6 +76,7 @@ buildscript {
       mavenLocal()
     }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'http://contents.nws.local:8081/nexus/content/repositories/Ruisdael' }
     mavenCentral()
   }
 
