@@ -19,7 +19,7 @@ LOGDIR:=~/.Ruisdael/logs
 
 # vert.x
 VERTXVER:=$(call getval,$(PROP),vertxVersion)
-VERTX:=$(DIR)/vert.x-$(VERTXVER)/bin/vertx
+VERTX:=~/.gvm/vertx/$(VERTXVER)/bin/vertx
 #VOPT:=$(call getval,$(PROP),runModArgs)
 VOPT:=-conf $(DIR)/conf.json
 
@@ -111,7 +111,7 @@ check:
 	@echo "owner:$(MODOWNER)"
 	@echo "name:$(MODNAME)"
 	@echo "version:$(MODVER)"
-	@echo "vertx:$(VERTXVER)"
+	@echo "vertx:$(VERTX)"
 	@echo "vertx option:$(VOPT)"
 	@echo "module:$(MODULE)"
 	@echo "srcs:$(SRCS)"
