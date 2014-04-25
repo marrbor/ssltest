@@ -77,8 +77,9 @@ abstract class Reporter extends BusMod {
     logger.debug "${this.class}#register:"
 
     // start timeout timer if timeout is specified.
+    def timerID = null
     if (config.timeout) {
-      def timerID = vertx.setTimer(config.timeout) {
+      timerID = vertx.setTimer(config.timeout) {
         // retry when timeout.
         logger.info "Timeout. retry registering..."
         register()
@@ -93,7 +94,7 @@ abstract class Reporter extends BusMod {
         logger.warn "Cannot register. Caused by ${reply.message}"
       } else {
         // stop timeout timer.
-        vertx.cancelTimer(timerID)
+        if (timerID) vertx.cancelTimer(timerID)
 
         // set information
         config.domain = reply.reporter.domain
