@@ -17,22 +17,6 @@ abstract class Reporter extends BusMod {
   // Override me!
   abstract def startReporting()
 
-  // Get mac address for temporary ID.
-  def getMacAddress() {
-    def hostNic = null
-    try {
-      def hostAddress = InetAddress.getLocalHost()
-      hostNic = NetworkInterface.getByInetAddress(hostAddress)
-    } catch (UnknownHostException e) {
-      NetworkInterface.getNetworkInterfaces().each { nic ->
-        if (nic.isUp() && !nic.isLoopback()) { hostNic = nic }
-      }
-    }
-    String ret = hostNic?.getHardwareAddress()?.collect { String.format("%02X", it) }?.join(':') ?:'00:11:22:33:44:55'
-    println "HOSTNIC:${hostNic?.getName()} MAC:${ret}"
-    ret
-  }
-
   // Gen Report
   def makeReport(target, item, value) {
     def report = [target: target, item: item, value: value, level:null]
@@ -132,6 +116,6 @@ abstract class Reporter extends BusMod {
     super.start()
     starttime = System.currentTimeMillis() // save start date
     sendreport = 0
-    config.mac = getMacAddress()
+    config.mac = hostProfile.mac
   }
 }
