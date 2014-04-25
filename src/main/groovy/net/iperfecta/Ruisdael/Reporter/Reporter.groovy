@@ -73,16 +73,20 @@ abstract class Reporter extends BusMod {
 
   // register me.
   def register() {
+    def startEpoch = System.currentTimeMillis() // save start date
     logger.debug "${this.class}#register:"
 
-    // start timeout timer
-    def timerID = vertx.setTimer(config.timeout) {
-      // retry when timeout.
-      logger.info "Timeout. retry registering..."
-      register()
+    // start timeout timer if timeout is specified.
+    if (config.timeout) {
+      def timerID = vertx.setTimer(config.timeout) {
+        // retry when timeout.
+        logger.info "Timeout. retry registering..."
+        register()
+      }
     }
 
     def msg = [action:'registerReporter', reporter:[id:config.id, name: config.name, mac:config.mac]]
+    logger.debug "Send register message to ${ADR_REG_REPORTER}"
     vertx.eventBus.send(ADR_REG_REPORTER, msg) {
       def reply = it.body
       if (reply.status != 'ok') {
@@ -105,6 +109,9 @@ abstract class Reporter extends BusMod {
 
         // start control eventbus listen
         vertx.eventBus.registerHandler(address) { control(it) }
+
+        // logged how long have to spent to registration.
+        logger.info "Successfully regist after ${System.currentTimeMillis() - startEpoch} msec."
 
         // start report
         startReporting()
