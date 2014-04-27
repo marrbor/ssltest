@@ -11,6 +11,7 @@ getval=$(shell cat $(1) |grep -e '^$(2)' |awk -F"=" '{print $$2}')
 # tools
 FIND:=/usr/bin/find
 JSONLINT:=~/Ruisdael/tools/bin/JsonLint.groovy
+GROOVY:=$(HOME)/.gvm/groovy/current/bin/groovy
 
 # location
 DIR:=$(abspath .)
@@ -57,6 +58,11 @@ GOPT:=
 OTHERDIR:=~/Ruisdael/modules/component-onepackage
 LOCALREPO:=~/.m2/repository/iperfecta/$(MODNAME)
 
+# include modules.
+LIBS:=iperfecta~lib-basis~$(call getval,$(PROP),libBasisVersion) iperfecta~lib-reporter~$(call getval,$(PROP),libReporterVersion)
+INCLUDES:=$(strip $(shell cat src/main/resources/mod.json |grep -e '^ *"includes"' |sed -e 's/^.*://' -e 's/"//g' -e 's/,/ /g'))
+INCCHK:=$(filter-out $(LIBS),$(INCLUDES))
+
 .PHONY: build run test install release clean
 
 build: $(MODFILES)
@@ -70,42 +76,63 @@ retest: clean test
 
 # compile java source
 $(CLSDIR)/%.class: $(JSRCDIR)/%.java
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	$(GRADLEW) $(GOPT) copyMod
 
 # compile groovy source
 $(CLSDIR)/%.class: $(GSRCDIR)/%.groovy
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	$(GRADLEW) $(GOPT) copyMod
 
 # copy other source/resource files
 $(CLSDIR)/%: $(RSRCDIR)/%
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	$(GRADLEW) $(GOPT) copyMod
 
 $(LOGDIR):
 	mkdir -p $@
 
 test:
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	$(GRADLEW) $(GOPT) $@
 
 install:
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	$(GRADLEW) $(GOPT) $@
 
 uninstall:
 	rm -rf $(LOCALREPO)
 
 release:
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	$(GRADLEW) $(GOPT) uploadArchives
 
 # release to other workspace.
 OMODDIR:=$(OTHERDIR)/build/mods/$(MODULE)
 other: $(MODFILES)
+ifneq "$(INCCHK)" ""
+	$(error "Dependency mismatch:$(INCCHK)")
+endif
 	cp -rf $(RSRCDIR)/* $(OMODDIR)
 	cp -rf $(BLDDIR)/classes/main/* $(OMODDIR)
 
 clean:
 	$(GRADLEW) $(GOPT) $@
 
-checkconf:
-	$(JSONLINT) conf.json
+chkconf:
+	$(GROOVY) $(JSONLINT) conf.json
 
 check:
 	@echo "owner:$(MODOWNER)"
@@ -118,3 +145,6 @@ check:
 	@echo "class:$(CLSS)"
 	@echo "localrepo:$(LOCALREPO)"
 	@echo "modfiles:$(MODFILES)"
+	@echo "LIBS:$(LIBS)"
+	@echo "INCLUDES:$(INCLUDES)"
+	@echo "INCCHK:$(INCCHK)"
