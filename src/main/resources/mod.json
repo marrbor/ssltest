@@ -4,10 +4,10 @@
   "author": "Genetec corp<tech-iperfecta@genetec.co.jp>",
   "licenses": "Proprietary",
   "keywords": ["iPerfecta","NMS"],
-  "includes": "iperfecta~lib-basis~0.0.2",
+  "includes": "iperfecta~lib-basis~0.0.3",
   //"deploys": "sample~samplemod~0.1",
   "preserve-cwd": false,
   "auto-redeploy": true,
-  "main": "Startup.groovy",
+  "main": "groovy:net.iperfecta.Ruisdael",
   "worker": false
 }
