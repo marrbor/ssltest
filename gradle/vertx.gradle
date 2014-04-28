@@ -76,7 +76,7 @@ buildscript {
       mavenLocal()
     }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'http://deployment:2009Invensyscontents.iperfecta-dev.local/nexus/content/repositories/Ruisdael' }
+    maven { url 'http://deployment:2009Invensys@contents.iperfecta-dev.local/nexus/content/repositories/Ruisdael' }
     mavenCentral()
   }
 
