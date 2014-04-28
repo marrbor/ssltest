@@ -20,7 +20,8 @@ LOGDIR:=~/.Ruisdael/logs
 
 # vert.x
 VERTXVER:=$(call getval,$(PROP),vertxVersion)
-VERTX:=~/.gvm/vertx/$(VERTXVER)/bin/vertx
+VERTXDIR:=~/.gvm/vertx/$(VERTXVER)
+VERTX:=$(VERTXDIR)/bin/vertx
 #VOPT:=$(call getval,$(PROP),runModArgs)
 VOPT:=-conf $(DIR)/conf.json
 
@@ -55,7 +56,7 @@ GOPT:=
 #GOPT:=--debug
 
 # other workspace to release.
-OTHERDIR:=~/Ruisdael/modules/component-onepackage
+SANDBOX:=~/Ruisdael/sandbox
 LOCALREPO:=~/.m2/repository/iperfecta/$(MODNAME)
 
 # include modules.
@@ -120,13 +121,13 @@ endif
 	$(GRADLEW) $(GOPT) uploadArchives
 
 # release to other workspace.
-OMODDIR:=$(OTHERDIR)/build/mods/$(MODULE)
-other: $(MODFILES)
+SMODDIR:=$(SANDBOX)/mods/$(MODULE)
+sandbox: $(MODFILES)
 ifneq "$(INCCHK)" ""
 	$(error "Dependency mismatch:$(INCCHK)")
 endif
-	cp -rf $(RSRCDIR)/* $(OMODDIR)
-	cp -rf $(BLDDIR)/classes/main/* $(OMODDIR)
+	cp -rf $(RSRCDIR)/* $(SMODDIR)
+	cp -rf $(BLDDIR)/classes/main/* $(SMODDIR)
 
 clean:
 	$(GRADLEW) $(GOPT) $@
@@ -148,3 +149,4 @@ check:
 	@echo "LIBS:$(LIBS)"
 	@echo "INCLUDES:$(INCLUDES)"
 	@echo "INCCHK:$(INCCHK)"
+	@echo "VERTXDIR:$(VERTXDIR)"
