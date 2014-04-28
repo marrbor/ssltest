@@ -8,6 +8,6 @@
   //"deploys": "sample~samplemod~0.1",
   "preserve-cwd": false,
   "auto-redeploy": true,
-  "main": "groovy:net.iperfecta.Ruisdael.Reporter.Reporter",
+  "main": "groovy:net.iperfecta.Ruisdael",
   "worker": false
 }
