@@ -64,6 +64,10 @@ LIBS:=iperfecta~lib-basis~$(call getval,$(PROP),libBasisVersion) iperfecta~lib-r
 INCLUDES:=$(strip $(shell cat src/main/resources/mod.json |grep -e '^ *"includes"' |sed -e 's/^.*://' -e 's/"//g' -e 's/,/ /g'))
 INCCHK:=$(filter-out $(LIBS),$(INCLUDES))
 
+# condition of workspace
+NONCOMMIT:=$(shell git status -s)
+MASTERDIF:=$(shell git remote show origin |grep 'up to date')
+
 .PHONY: build run test install release clean
 
 build: $(MODFILES)
@@ -109,6 +113,12 @@ install:
 ifneq "$(INCCHK)" ""
 	$(error "Dependency mismatch:$(INCCHK)")
 endif
+ifneq "$(NONCOMMIT)" ""
+	$(error "Non-commit file(s) are remaining. Commit them first.")
+endif
+ifeq  "$(MASTERDIF)" ""
+	$(error "Non-marge file(s) or Non-push file(s) are remaining. Marge/Push them first.")
+endif
 	$(GRADLEW) $(GOPT) $@
 
 uninstall:
@@ -117,6 +127,12 @@ uninstall:
 release:
 ifneq "$(INCCHK)" ""
 	$(error "Dependency mismatch:$(INCCHK)")
+endif
+ifneq "$(NONCOMMIT)" ""
+	$(error "Non-commit file(s) are remaining. Commit them first.")
+endif
+ifeq  "$(MASTERDIF)" ""
+	$(error "Non-marge file(s) or Non-push file(s) are remaining. Marge/Push them first.")
 endif
 	$(GRADLEW) $(GOPT) uploadArchives
 
@@ -150,3 +166,5 @@ check:
 	@echo "INCLUDES:$(INCLUDES)"
 	@echo "INCCHK:$(INCCHK)"
 	@echo "VERTXDIR:$(VERTXDIR)"
+	@echo "NONCOMMIT:$(NONCOMMIT)"
+	@echo "MASTERDIF:$(MASTERDIF)"
