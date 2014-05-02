@@ -67,6 +67,7 @@ INCCHK:=$(filter-out $(LIBS),$(INCLUDES))
 # condition of workspace
 NONCOMMIT:=$(shell git status -s)
 MASTERDIF:=$(shell git remote show origin |grep 'up to date')
+BRANCH=$(shell git branch --contains |grep '*' |grep 'master')
 
 .PHONY: build run test install release clean
 
@@ -119,6 +120,9 @@ endif
 ifeq  "$(MASTERDIF)" ""
 	$(error "Non-marge file(s) or Non-push file(s) are remaining. Marge/Push them first.")
 endif
+ifeq "$(BRANCH)" ""
+	$(error "This is not master branch. Marge/Push them first.")
+endif
 	$(GRADLEW) $(GOPT) $@
 
 uninstall:
@@ -133,6 +137,9 @@ ifneq "$(NONCOMMIT)" ""
 endif
 ifeq  "$(MASTERDIF)" ""
 	$(error "Non-marge file(s) or Non-push file(s) are remaining. Marge/Push them first.")
+endif
+ifeq "$(BRANCH)" ""
+	$(error "This is not master branch. Marge/Push them first.")
 endif
 	$(GRADLEW) $(GOPT) uploadArchives
 
@@ -168,3 +175,4 @@ check:
 	@echo "VERTXDIR:$(VERTXDIR)"
 	@echo "NONCOMMIT:$(NONCOMMIT)"
 	@echo "MASTERDIF:$(MASTERDIF)"
+	@echo "BRANCH:$(BRANCH)"
