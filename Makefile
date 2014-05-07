@@ -117,12 +117,6 @@ endif
 ifneq "$(NONCOMMIT)" ""
 	$(error "Non-commit file(s) are remaining. Commit them first.")
 endif
-ifeq  "$(MASTERDIF)" ""
-	$(error "Non-marge file(s) or Non-push file(s) are remaining. Marge/Push them first.")
-endif
-ifeq "$(BRANCH)" ""
-	$(error "This is not master branch. Marge/Push them first.")
-endif
 	$(GRADLEW) $(GOPT) $@
 
 uninstall:
