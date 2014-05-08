@@ -115,7 +115,7 @@ ifneq "$(INCCHK)" ""
 	$(error "Dependency mismatch:$(INCCHK)")
 endif
 ifneq "$(NONCOMMIT)" ""
-	$(error "Non-commit file(s) are remaining. Commit them first.")
+	$(warning "Non-commit file(s) are remaining. Do not forget commit them.")
 endif
 	$(GRADLEW) $(GOPT) $@
 
