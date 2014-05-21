@@ -8,6 +8,6 @@
   //"deploys": "sample~samplemod~0.1",
   "preserve-cwd": false,
   "auto-redeploy": true,
-  "main": "groovy:net.iperfecta.Ruisdael",
+  "main": "groovy:jp.survei.",
   "worker": false
 }
