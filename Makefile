@@ -7,11 +7,32 @@
 
 # function
 getval=$(shell cat $(1) |grep -e '^$(2)' |awk -F"=" '{print $$2}')
+gathersrc=$(shell test -d $(1) && $(FIND) $(1) -type f)
 
 # tools
 FIND:=/usr/bin/find
-JSONLINT:=~/Ruisdael/tools/bin/JsonLint.groovy
+TOOLDIR:=../../tools
 GROOVY:=$(HOME)/.gvm/groovy/current/bin/groovy
+JAVA:=/usr/bin/java
+
+JSCOMPILER:=$(TOOLDIR)/thirdparty/closurecompiler/compiler.jar
+
+JSONLINT:=$(TOOLDIR)/bin/JsonLint.groovy
+
+# gjslint (set blank when don't want to check.)
+#JSLINT:=
+JSLINT:=/usr/bin/gjslint
+JSLINTFLAG:=--strict
+#JSLINTFLAG:=--nojsdoc
+
+## compile java script (set blank when don't want to compile)
+#JSCOMPLVL:=
+#JSCOMPLVL:=WHITESPACE_ONLY
+JSCOMPLVL:=SIMPLE_OPTIMIZATIONS
+#JSCOMPLVL:=ADVANCED_OPTIMIZATIONS
+
+## option of compile java script (keep blank when don't want to compress)
+JSCOMPOPT:=
 
 # location
 DIR:=$(abspath .)
@@ -29,6 +50,7 @@ VOPT:=-conf $(DIR)/conf.json
 SRCDIR:=$(DIR)/src/main
 JSRCDIR:=$(DIR)/src/main/java
 GSRCDIR:=$(DIR)/src/main/groovy
+JSSRCDIR:=$(DIR)/src/main/javascript
 RSRCDIR:=$(DIR)/src/main/resources
 
 BLDDIR:=$(DIR)/build
@@ -38,16 +60,18 @@ MODNAME:=$(call getval,$(PROP),modname)
 MODVER:=$(call getval,$(PROP),version)
 MODULE:=$(MODOWNER)~$(MODNAME)~$(MODVER)
 CLSDIR:=$(MODDIR)/$(MODULE)
+JSCLSDIR:=$(CLSDIR)/static-contents/js
 
 # source files that need not compiled.
 RSRCS:=$(shell $(FIND) $(RSRCDIR) -type f)
 
-# source files that need compiled.
-JSRCS:=$(shell $(FIND) $(JSRCDIR) -type f)
-GSRCS:=$(shell $(FIND) $(GSRCDIR) -type f)
+# source and class files that need compiled. java, groovy and javascript.
+JCLSS:=$(addsuffix .class,$(basename $(subst $(JSRCDIR),$(CLSDIR),$(call gathersrc,$(JSRCDIR)))))
+GCLSS:=$(addsuffix .class,$(basename $(subst $(GSRCDIR),$(CLSDIR),$(call gathersrc,$(GSRCDIR)))))
+JSCLSS:=$(addsuffix .min.js,$(basename $(subst $(JSSRCDIR),$(JSCLSDIR),$(call gathersrc,$(JSSRCDIR)))))
 
 # module files.
-MODFILES:=$(subst $(RSRCDIR),$(CLSDIR),$(RSRCS)) $(addsuffix .class,$(basename $(subst $(JSRCDIR),$(CLSDIR),$(JSRCS) $(subst $(GSRCDIR),$(CLSDIR),$(GSRCS)))))
+MODFILES:=$(subst $(RSRCDIR),$(CLSDIR),$(RSRCS)) $(JSCLSS) $(JCLSS) $(GCLSS)
 
 # gradlew
 GRADLEW:=$(DIR)/gradlew
@@ -56,7 +80,7 @@ GOPT:=
 #GOPT:=--debug
 
 # other workspace to release.
-SANDBOX:=~/Ruisdael/sandbox
+SANDBOX:=../../sandbox
 LOCALREPO:=~/.m2/repository/iperfecta/$(MODNAME)
 
 # include modules.
@@ -79,6 +103,20 @@ run: $(MODFILES) $(LOGDIR)
 reload: clean run
 
 retest: clean test
+
+# compile javascript have to be done before 'copyMod'
+
+
+# compile javascript source
+$(JSCLSDIR)/%.min.js: $(JSSRCDIR)/%.js
+ifneq ($(strip $(JSLINT)),)
+	-$(JSLINT) $(JSLINTFLAG) $<
+endif
+ifeq ($(strip $(JSCOMPLVL)),)
+	cp -f $< $@
+else
+	$(JAVA) -jar $(JSCOMPILER) $(JSCOMPOPT) --compilation_level $(JSCOMPLVL) --js $< --js_output_file $@
+endif
 
 # compile java source
 $(CLSDIR)/%.class: $(JSRCDIR)/%.java
@@ -110,7 +148,7 @@ ifneq "$(INCCHK)" ""
 endif
 	$(GRADLEW) $(GOPT) $@
 
-install:
+install: $(MODFILES)
 ifneq "$(INCCHK)" ""
 	$(error "Dependency mismatch:$(INCCHK)")
 endif
@@ -122,7 +160,7 @@ endif
 uninstall:
 	rm -rf $(LOCALREPO)
 
-release:
+release: $(MODFILES)
 ifneq "$(INCCHK)" ""
 	$(error "Dependency mismatch:$(INCCHK)")
 endif
@@ -159,8 +197,6 @@ check:
 	@echo "vertx:$(VERTX)"
 	@echo "vertx option:$(VOPT)"
 	@echo "module:$(MODULE)"
-	@echo "srcs:$(SRCS)"
-	@echo "class:$(CLSS)"
 	@echo "localrepo:$(LOCALREPO)"
 	@echo "modfiles:$(MODFILES)"
 	@echo "LIBS:$(LIBS)"
@@ -170,3 +206,6 @@ check:
 	@echo "NONCOMMIT:$(NONCOMMIT)"
 	@echo "MASTERDIF:$(MASTERDIF)"
 	@echo "BRANCH:$(BRANCH)"
+	@echo "JCLSS:$(JCLSS)"
+	@echo "GCLSS:$(GCLSS)"
+	@echo "JSCLSS:$(JSCLSS)"
