@@ -39,10 +39,10 @@ MODVER:=$(call getval,$(PROP),version)
 MODULE:=$(MODOWNER)~$(MODNAME)~$(MODVER)
 CLSDIR:=$(MODDIR)/$(MODULE)
 
-# source files that need compiled.
+# source files that need not compiled.
 RSRCS:=$(shell $(FIND) $(RSRCDIR) -type f)
 
-# source files that need not compiled.
+# source files that need compiled.
 JSRCS:=$(shell $(FIND) $(JSRCDIR) -type f)
 GSRCS:=$(shell $(FIND) $(GSRCDIR) -type f)
 
