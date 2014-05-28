@@ -74,28 +74,28 @@ Please edit the details below.
 def configurePom(def pom) {
   pom.project {
     name rootProject.name
-    description 'Ruisdael module.'
+    description 'Surve-i module.'
     inceptionYear '2014'
     packaging 'jar'
 
-    url 'http://www.iperfecta.net'
+    url 'http://www.surve-i.jp'
 
     developers {
       developer {
         id 'developer id (e.g. github username)'
         name 'Genetec corp.'
-        email 'tech-iperfecta@genetec.co.jp'
+        email 'surve-i-info@genetec.co.jp'
       }
     }
 
     scm {
-      url 'http://www.iperfecta.net'
+      url 'http://www.surve-i.jp'
     }
 
     licenses {
       license {
         name 'Proprietary'
-        url 'http://www.iperfecta.net'
+        url 'http://www.surve-i.jp'
         distribution 'repo'
       }
     }
