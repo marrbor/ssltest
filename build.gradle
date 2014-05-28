@@ -50,8 +50,8 @@ dependencies {
   provided "com.foo:foo-lib:1.0.1" - if you DON'T want it to be packaged in the module zip
   */
   compile fileTree(dir: 'src/main/resources/lib', includes: ['*.jar', '*.zip'])
-  provided "iperfecta:lib-basis:$libBasisVersion@jar"
-  provided "iperfecta:lib-reporter:$libReporterVersion@jar"
+  provided "survei:lib-basis:$libBasisVersion@jar"
+  provided "survei:lib-reporter:$libReporterVersion@jar"
 
   // If you're creating Groovy compiled verticles you may need the following dependencies
   provided "org.codehaus.groovy:groovy-all:$groovyVersion"

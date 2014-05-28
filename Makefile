@@ -81,10 +81,10 @@ GOPT:=
 
 # other workspace to release.
 SANDBOX:=../../sandbox
-LOCALREPO:=~/.m2/repository/iperfecta/$(MODNAME)
+LOCALREPO:=~/.m2/repository/survei/$(MODNAME)
 
 # include modules.
-LIBS:=iperfecta~lib-basis~$(call getval,$(PROP),libBasisVersion) iperfecta~lib-reporter~$(call getval,$(PROP),libReporterVersion)
+LIBS:=survei~lib-basis~$(call getval,$(PROP),libBasisVersion)
 INCLUDES:=$(strip $(shell cat src/main/resources/mod.json |grep -e '^ *"includes"' |sed -e 's/^.*://' -e 's/"//g' -e 's/,/ /g'))
 INCCHK:=$(filter-out $(LIBS),$(INCLUDES))
 
