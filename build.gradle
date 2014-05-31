@@ -51,7 +51,6 @@ dependencies {
   */
   compile fileTree(dir: 'src/main/resources/lib', includes: ['*.jar', '*.zip'])
   provided "survei:lib-basis:$libBasisVersion@jar"
-  provided "survei:lib-reporter:$libReporterVersion@jar"
 
   // If you're creating Groovy compiled verticles you may need the following dependencies
   provided "org.codehaus.groovy:groovy-all:$groovyVersion"
