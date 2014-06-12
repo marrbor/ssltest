@@ -5,6 +5,14 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermissions
 
+def send(adrs, msg, handler) {
+  vertx.eventBus.send(adrs, msg) {
+    logger.info "SEND:${msg}  => REPLY:${it.body}"
+    handler.call(it)
+  }
+}
+
+
 // The test methods must being with "test"
 
 // example.
