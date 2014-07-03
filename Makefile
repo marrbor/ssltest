@@ -43,6 +43,7 @@ LOGDIR:=~/.Ruisdael/logs
 VERTXVER:=$(call getval,$(PROP),vertxVersion)
 VERTXDIR:=~/.gvm/vertx/$(VERTXVER)
 VERTX:=$(VERTXDIR)/bin/vertx
+REPOTXT:=$(VERTXDIR)/conf/repos.txt
 #VOPT:=$(call getval,$(PROP),runModArgs)
 VOPT:=-conf $(DIR)/conf.json
 
@@ -97,8 +98,13 @@ BRANCH=$(shell git branch --contains |grep '*' |grep 'master')
 
 build: $(MODFILES)
 
-run: $(MODFILES) $(LOGDIR)
+run: $(MODFILES) $(LOGDIR) repotxt
 	cd $(BLDDIR) && $(VERTX) runmod $(MODULE) $(VOPT)
+
+repotxt:
+	@grep 'contents.iperfecta-dev.local' $(REPOTXT) >/dev/null || \
+	echo -e "\n# Inhouse Maven repo.\nmaven:http://deployment:2009Invensys@contents.iperfecta-dev.local/nexus/content/repositories/Ruisdael" >>$(REPOTXT)
+
 
 reload: clean run
 
