@@ -4,7 +4,7 @@
   "author": "Genetec corp<surve-i-info@genetec.co.jp>",
   "licenses": "Proprietary",
   "keywords": ["IoT", "Internet Of Things", "M2M", "Machine to Machine", "surveillance"],
-  "includes": "survei~lib-basis~0.0.13",
+  "includes": "survei~lib-basis~0.0.15",
   //"deploys": "sample~samplemod~0.1",
   "preserve-cwd": false,
   "auto-redeploy": false,
