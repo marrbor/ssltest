@@ -5,6 +5,10 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermissions
 
+logger = container.logger
+
+def config = [:]
+
 def send(adrs, msg, handler) {
   vertx.eventBus.send(adrs, msg) {
     logger.info "SEND:${msg}  => REPLY:${it.body}"
@@ -35,15 +39,13 @@ VertxTests.initialize(this)
 // The script is execute for each test, so this will deploy the module for each one
 // Deploy the module - the System property `vertx.modulename` will contain the name of the module so you
 // don't have to hardecode it in your tests
-container.deployModule(System.getProperty("vertx.modulename"), { asyncResult ->
-  // Deployment is asynchronous and this handler will be called when it's complete (or failed)
-  assertTrue(asyncResult.succeeded)
-  assertNotNull("deploymentID should not be null", asyncResult.result())
+container.deployModule(System.getProperty("vertx.modulename"), config) { asyncResult ->
   if (!asyncResult.succeeded) {
-    println asyncResult.cause()
+    logger.fatal asyncResult.cause()
+    assertTrue(asyncResult.succeeded) // stop test.
   } else {
-    println asyncResult.result()
+    logger.info asyncResult.result()
+    // If deployed correctly then start the tests!
+    VertxTests.startTests(this)
   }
-  // If deployed correctly then start the tests!
-  VertxTests.startTests(this)
-})
+}
