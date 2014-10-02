@@ -6,6 +6,7 @@ import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermissions
 
 logger = container.logger
+home = "./build/mods/${System.getProperty('vertx.modulename')}"
 
 def config = [:]
 
