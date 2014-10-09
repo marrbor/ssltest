@@ -17,7 +17,7 @@ def send(adrs, msg, handler = null) {
   } else {
     vertx.eventBus.send(adrs, msg) {
       logger.info "SEND:${msg}  => REPLY:${it.body}"
-      handler.call(it)
+      handler.call(it.body)
     }
   }
 }
