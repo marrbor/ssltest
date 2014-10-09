@@ -10,10 +10,15 @@ home = "./build/mods/${System.getProperty('vertx.modulename')}"
 
 def config = [:]
 
-def send(adrs, msg, handler) {
-  vertx.eventBus.send(adrs, msg) {
-    logger.info "SEND:${msg}  => REPLY:${it.body}"
-    handler.call(it.body)
+def send(adrs, msg, handler = null) {
+  if (!handler) {
+    vertx.eventBus.send(adrs, msg)
+    logger.info "SEND:${msg}"
+  } else {
+    vertx.eventBus.send(adrs, msg) {
+      logger.info "SEND:${msg}  => REPLY:${it.body}"
+      handler.call(it)
+    }
   }
 }
 
