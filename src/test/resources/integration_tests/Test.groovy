@@ -13,10 +13,10 @@ def config = [:]
 def send(adrs, msg, handler = null) {
   if (!handler) {
     vertx.eventBus.send(adrs, msg)
-    logger.info "SEND:${msg}"
+    logger.info "SEND:${msg} TO ${adrs}"
   } else {
     vertx.eventBus.send(adrs, msg) {
-      logger.info "SEND:${msg}  => REPLY:${it.body}"
+      logger.info "SEND:${msg} TO ${adrs} REPLY:${it.body}"
       handler.call(it.body)
     }
   }
