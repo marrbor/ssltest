@@ -13,10 +13,9 @@ gathersrc=$(shell test -d $(1) && $(FIND) $(1) -type f)
 FIND:=/usr/bin/find
 TOOLDIR:=../../tools
 GROOVY:=$(HOME)/.gvm/groovy/current/bin/groovy
-JAVA:=/usr/bin/java
+JAVA:=$(JAVA_HOME)/bin/java
 
 JSCOMPILER:=$(TOOLDIR)/thirdparty/closurecompiler/compiler.jar
-
 JSONLINT:=$(TOOLDIR)/bin/JsonLint.groovy
 
 # gjslint (set blank when don't want to check.)
@@ -31,7 +30,7 @@ JSLINTFLAG:=--strict
 JSCOMPLVL:=SIMPLE_OPTIMIZATIONS
 #JSCOMPLVL:=ADVANCED_OPTIMIZATIONS
 
-## option of compile java script (keep blank when don't want to compress)
+## option of compile javascript (keep blank when don't want to compress)
 JSCOMPOPT:=
 
 # location
@@ -60,34 +59,22 @@ MODOWNER:=$(call getval,$(PROP),modowner)
 MODNAME:=$(call getval,$(PROP),modname)
 MODVER:=$(call getval,$(PROP),version)
 MODULE:=$(MODOWNER)~$(MODNAME)~$(MODVER)
-CLSDIR:=$(MODDIR)/$(MODULE)
-JSCLSDIR:=$(CLSDIR)/static-contents/js
+JSCLSDIR:=$(RSRCDIR)/static-contents/js
 
-# source files that need not compiled.
-RSRCS:=$(shell $(FIND) $(RSRCDIR) -type f)
-
-# source and class files that need compiled. java, groovy and javascript.
-JCLSS:=$(addsuffix .class,$(basename $(subst $(JSRCDIR),$(CLSDIR),$(call gathersrc,$(JSRCDIR)))))
-GCLSS:=$(addsuffix .class,$(basename $(subst $(GSRCDIR),$(CLSDIR),$(call gathersrc,$(GSRCDIR)))))
+# javascript source need compile.
 JSCLSS:=$(addsuffix .min.js,$(basename $(subst $(JSSRCDIR),$(JSCLSDIR),$(call gathersrc,$(JSSRCDIR)))))
 
-# module files.
-MODFILES:=$(subst $(RSRCDIR),$(CLSDIR),$(RSRCS)) $(JSCLSS) $(JCLSS) $(GCLSS)
+# get lib-basis version
+LIBBASISVER:=$(strip $(shell cat src/main/resources/mod.json |grep 'lib-basis' |sed -e 's/[^0-9\.]//g'))
 
 # gradlew
 GRADLEW:=$(DIR)/gradlew
-GOPT:=
-#GOPT:=--info
-#GOPT:=--debug
+GOPT:=-PlibBasisVersion=$(LIBBASISVER)
+#GOPT:=--info -PlibBasisVersion=$(LIBBASISVER)
+#GOPT:=--debug -PlibBasisVersion=$(LIBBASISVER)
 
 # other workspace to release.
-SANDBOX:=../../sandbox
 LOCALREPO:=~/.m2/repository/survei/$(MODNAME)
-
-# include modules.
-LIBS:=survei~lib-basis~$(call getval,$(PROP),libBasisVersion)
-INCLUDES:=$(strip $(shell cat src/main/resources/mod.json |grep -e '^ *"includes"' |sed -e 's/^.*://' -e 's/"//g' -e 's/,/ /g'))
-INCCHK:=$(filter-out $(LIBS),$(INCLUDES))
 
 # condition of workspace
 NONCOMMIT:=$(shell git status -s)
@@ -96,9 +83,21 @@ BRANCH=$(shell git branch --contains |grep '*' |grep 'master')
 
 .PHONY: build run test install release clean
 
-build: $(MODFILES)
+build: $(JSCLSS)
+	$(GRADLEW) $(GOPT) copyMod
 
-run: $(MODFILES) $(LOGDIR) repotxt
+# compile javascript have to be done before 'copyMod'
+$(JSCLSDIR)/%.min.js: $(JSSRCDIR)/%.js
+ifneq ($(strip $(JSLINT)),)
+	-$(JSLINT) $(JSLINTFLAG) $<
+endif
+ifeq ($(strip $(JSCOMPLVL)),)
+	cp -f $< $@
+else
+	$(JAVA) -jar $(JSCOMPILER) $(JSCOMPOPT) --compilation_level $(JSCOMPLVL) --js $< --js_output_file $@
+endif
+
+run: build $(LOGDIR) repotxt
 	cd $(BLDDIR) && $(VERTX) runmod $(MODULE) $(VOPT)
 
 repotxt:
@@ -110,54 +109,13 @@ reload: clean run
 
 retest: clean test
 
-# compile javascript have to be done before 'copyMod'
-
-
-# compile javascript source
-$(JSCLSDIR)/%.min.js: $(JSSRCDIR)/%.js
-ifneq ($(strip $(JSLINT)),)
-	-$(JSLINT) $(JSLINTFLAG) $<
-endif
-ifeq ($(strip $(JSCOMPLVL)),)
-	cp -f $< $@
-else
-	$(JAVA) -jar $(JSCOMPILER) $(JSCOMPOPT) --compilation_level $(JSCOMPLVL) --js $< --js_output_file $@
-endif
-
-# compile java source
-$(CLSDIR)/%.class: $(JSRCDIR)/%.java
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
-	$(GRADLEW) $(GOPT) copyMod
-
-# compile groovy source
-$(CLSDIR)/%.class: $(GSRCDIR)/%.groovy
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
-	$(GRADLEW) $(GOPT) copyMod
-
-# copy other source/resource files
-$(CLSDIR)/%: $(RSRCDIR)/%
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
-	$(GRADLEW) $(GOPT) copyMod
-
 $(LOGDIR):
 	mkdir -p $@
 
 test:
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
 	$(GRADLEW) $(GOPT) $@
 
-install: $(MODFILES)
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
+install: build
 ifneq "$(NONCOMMIT)" ""
 	$(warning "Non-commit file(s) are remaining. Do not forget commit them.")
 endif
@@ -166,10 +124,7 @@ endif
 uninstall:
 	rm -rf $(LOCALREPO)
 
-release: $(MODFILES)
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
+release: build
 ifneq "$(NONCOMMIT)" ""
 	$(error "Non-commit file(s) are remaining. Commit them first.")
 endif
@@ -181,16 +136,10 @@ ifeq "$(BRANCH)" ""
 endif
 	$(GRADLEW) $(GOPT) uploadArchives
 
-# release to other workspace.
-SMODDIR:=$(SANDBOX)/mods/$(MODULE)
-sandbox: $(MODFILES)
-ifneq "$(INCCHK)" ""
-	$(error "Dependency mismatch:$(INCCHK)")
-endif
-	cp -rf $(RSRCDIR)/* $(SMODDIR)
-	cp -rf $(BLDDIR)/classes/main/* $(SMODDIR)
-
 clean:
+	$(GRADLEW) $(GOPT) $@
+
+fatjar:
 	$(GRADLEW) $(GOPT) $@
 
 chkconf:
@@ -204,14 +153,11 @@ check:
 	@echo "vertx option:$(VOPT)"
 	@echo "module:$(MODULE)"
 	@echo "localrepo:$(LOCALREPO)"
-	@echo "modfiles:$(MODFILES)"
-	@echo "LIBS:$(LIBS)"
 	@echo "INCLUDES:$(INCLUDES)"
-	@echo "INCCHK:$(INCCHK)"
 	@echo "VERTXDIR:$(VERTXDIR)"
 	@echo "NONCOMMIT:$(NONCOMMIT)"
 	@echo "MASTERDIF:$(MASTERDIF)"
 	@echo "BRANCH:$(BRANCH)"
-	@echo "JCLSS:$(JCLSS)"
-	@echo "GCLSS:$(GCLSS)"
 	@echo "JSCLSS:$(JSCLSS)"
+	@echo "LIBBASISVER:$(LIBBASISVER)"
+	@echo "GOPT:$(GOPT)"
