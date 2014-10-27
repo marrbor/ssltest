@@ -97,7 +97,7 @@ else
 	$(JAVA) -jar $(JSCOMPILER) $(JSCOMPOPT) --compilation_level $(JSCOMPLVL) --js $< --js_output_file $@
 endif
 
-run: build $(LOGDIR) repotxt
+run: $(JSCLSS) $(LOGDIR) repotxt
 	cd $(BLDDIR) && $(VERTX) runmod $(MODULE) $(VOPT)
 
 repotxt:
@@ -115,7 +115,7 @@ $(LOGDIR):
 test:
 	$(GRADLEW) $(GOPT) $@
 
-install: build
+install: $(JSCLSS)
 ifneq "$(NONCOMMIT)" ""
 	$(warning "Non-commit file(s) are remaining. Do not forget commit them.")
 endif
@@ -124,7 +124,7 @@ endif
 uninstall:
 	rm -rf $(LOCALREPO)
 
-release: build
+release: $(JSCLSS)
 ifneq "$(NONCOMMIT)" ""
 	$(error "Non-commit file(s) are remaining. Commit them first.")
 endif
