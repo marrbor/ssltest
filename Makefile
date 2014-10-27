@@ -137,6 +137,9 @@ endif
 	$(GRADLEW) $(GOPT) uploadArchives
 
 clean:
+ifneq ($(strip $(JSCLSS)),)
+	-rm -f $(JSCLSS)
+endif
 	$(GRADLEW) $(GOPT) $@
 
 fatjar:
