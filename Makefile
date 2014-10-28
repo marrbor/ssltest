@@ -97,7 +97,7 @@ else
 	$(JAVA) -jar $(JSCOMPILER) $(JSCOMPOPT) --compilation_level $(JSCOMPLVL) --js $< --js_output_file $@
 endif
 
-run: $(JSCLSS) $(LOGDIR) repotxt
+run: build $(LOGDIR) repotxt
 	cd $(BLDDIR) && $(VERTX) runmod $(MODULE) $(VOPT)
 
 repotxt:
