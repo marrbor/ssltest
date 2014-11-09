@@ -8,6 +8,6 @@
   //"deploys": "sample~samplemod~0.1",
   "preserve-cwd": false,
   "auto-redeploy": false,
-  "main": "groovy:jp.survei.",
+  "main": "groovy:jp.survei.ssltest.Server",
   "worker": false
 }

@@ -1,2 +1,1 @@
-{
-}
+{"destport":10080, "ssl":true, "keyStorePath":"surveikeystore", "keyStorePassword":"f42d5fa9-d1fa-42", "useclient":false}

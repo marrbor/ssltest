@@ -8,7 +8,9 @@ import java.nio.file.attribute.PosixFilePermissions
 logger = container.logger
 home = "./build/mods/${System.getProperty('vertx.modulename')}"
 
-def config = [:]
+jsonSlurper = new JsonSlurper()
+
+config = jsonSlurper.parse(new File('conf.json'))
 
 def send(adrs, msg, handler = null) {
   if (!handler) {
@@ -22,15 +24,49 @@ def send(adrs, msg, handler = null) {
   }
 }
 
+def request(count = 1) {
+  def req
+  switch (count) {
+  case 1://
+    req = httpClient.put("/") { println "PUT RESULT: ${it.statusCode}" }
+    break
+  case 2: //
+    req = httpClient.post("/") { println "POST RESULT: ${it.statusCode}" }
+    break
+  case 3: //
+    req = httpClient.get("/") { println "GET RESULT: ${it.statusCode}" }
+    break
+  case 4: //
+    req = httpClient.put("/path/to/put/data") { println "PUT RESULT: ${it.statusCode}" }
+    break
+  case 5: //
+    req = httpClient.post("/path/to/data") { println "POST RESULT: ${it.statusCode}" }
+    break
+  case 6: //
+    req = httpClient.get("/favicon.ico") { println "GET RESULT: ${it.statusCode}" }
+    break
+  default: //
+    testComplete()
+  }
+  req.end()
+  ++count
+}
+
+
+def timeout() {
+  def next = request()
+  vertx.setPeriodic(500) { timeout(next) }
+}
 
 // The test methods must being with "test"
 
-// example.
 def testOut() {
-  println "${new File('.').getAbsolutePath()}"
-  println "vertx is ${vertx.getClass().getName()}"
-  println "Module: ${System.getProperty('vertx.modulename')}"
-  testComplete()
+  // generate HTTP client for sending report.
+  def param = [port:config.destport, host: 'localhost', keepAlive:false]
+  if (config.ssl) { param.SSL = true; param.trustAll = true }
+  httpClient = vertx.createHttpClient(param)
+  def next = request()
+  vertx.setPeriodic(500) { timeout(next) }
 }
 
 
